@@ -1,354 +1,353 @@
 {
-  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.0.0",
-  "parameters": {
-    "workspaceName": {
-      "type": "string"
-    },
-    "accountName": {
-      "type": "string"
-    },
-    "workspaceRegionId": {
-      "type": "string"
-    },
-    "regionId": {
-      "type": "string"
-    },
-    "pricingTier": {
-      "type": "string"
-    }
-  },
-  "variables": {
-    "SolutionVersion": "9.8.0.0",
-    "SolutionPublisher": "Squadra Technologies",
-    "SolutionName": "secRMM OMS Solution",
-    "LogAnalyticsApiVersion": "2015-11-01-preview",
-    "ViewAuthor": "support@squadratechnologies.com",
-    "ViewDescription": "This is the OMS Dashboard for the secRMM security solution.",
-    "ViewName": "secRMM"
-  },
-  "resources": [
-    {
-      "name": "[concat(variables('SolutionName'), '[' ,parameters('workspacename'), ']')]",
-      "location": "[parameters('workspaceRegionId')]",
-      "tags": { },
-      "type": "Microsoft.OperationsManagement/solutions",
-      "apiVersion": "[variables('LogAnalyticsApiVersion')]",
-      "dependsOn": [
-        "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspacename'), '/views/', variables('ViewName'))]"
-      ],
-      "properties": {
-        "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspacename'))]",
-        "referencedResources": [
-        ],
-        "containedResources": [
-          "[resourceId('Microsoft.OperationalInsights/workspaces/views/', parameters('workspaceName'), variables('ViewName'))]"
-        ]
-      },
-      "plan": {
-        "name": "[concat(variables('SolutionName'), '[' ,parameters('workspaceName'), ']')]",
-        "Version": "[variables('SolutionVersion')]",
-        "product": "ContosoSolution",
-        "publisher": "[variables('SolutionPublisher')]",
-        "promotionCode": ""
-      }
-    },
-    {
-      "apiVersion": "[variables('LogAnalyticsApiVersion')]",
-      "name": "[concat(parameters('workspaceName'), '/', variables('ViewName'))]",
-      "type": "Microsoft.OperationalInsights/workspaces/views",
-      "location": "[parameters('workspaceregionId')]",
-      "dependson": [
-      ],
-
-      "properties": {
-        "Id": "[variables('ViewName')]",
-        "Name": "[variables('ViewName')]",
-        "DisplayName": "[variables('ViewName')]",
-        "Description": "[variables('ViewDescription')]",
-        "Author": "[variables('ViewAuthor')]",
-        "Source": "Local",
-        "Dashboard": [
-          {
-            "Id": "SingleQueryDonutBuilderBladeV1",
-            "Type": "Blade",
-            "Version": 0,
-            "Configuration": {
-              "General": {
-                "title": "Removable Media Authorization Failures",
-                "newGroup": false,
-                "useIcon": false
-              },
-              "Header": {
-                "Title": "Total Count",
-                "Subtitle": "Failed file write attempts to removable media"
-              },
-              "Donut": {
-                "Query": "EventLog=secRMM EventID=500 OR EventID=501 OR EventID=502 OR EventID=503 OR EventID=503 OR EventID=504 OR EventID=505 OR EventID=506 OR EventID=507 OR EventID=508 OR EventID=509 | measure count() by Type",
-                "CenterLegend": {
-                  "Text": "Total",
-                  "Operation": "Sum",
-                  "ArcsToSelect": [ ]
-                },
-                "Options": {
-                  "colors": [
-                    "#e81123",
-                    "#ba141a",
-                    "#ba141a"
-                  ],
-                  "valueColorMapping": [ ]
-                }
-              },
-              "List": {
-                "Query": "EventLog=secRMM EventID=500 OR EventID=501 OR EventID=502 OR EventID=503 OR EventID=503 OR EventID=504 OR EventID=505 OR EventID=506 OR EventID=507 OR EventID=508 OR EventID=509 | measure Count() by Type",
-                "HideGraph": false,
-                "enableSparklines": false,
-                "ColumnsTitle": {
-                  "Name": "Computer",
-                  "Value": "Count"
-                },
-                "Color": "#0072c6",
-                "operation": "Summary",
-                "thresholds": {
-                  "isEnabled": false,
-                  "values": [
-                    {
-                      "name": "Normal",
-                      "threshold": "Default",
-                      "color": "#009e49",
-                      "isDefault": true
-                    },
-                    {
-                      "name": "Warning",
-                      "threshold": "60",
-                      "color": "#fcd116",
-                      "isDefault": false
-                    },
-                    {
-                      "name": "Error",
-                      "threshold": "90",
-                      "color": "#ba141a",
-                      "isDefault": false
-                    }
-                  ]
-                },
-                "NameDSVSeparator": "",
-                "NavigationQuery": "{selected item}"
-              }
-            }
-          },
-          {
-            "Id": "NumberTileListBuilderBlade",
-            "Type": "Blade",
-            "Version": 0,
-            "Configuration": {
-              "General": {
-                "title": "Removable Media Online Events",
-                "newGroup": false,
-                "icon": "",
-                "useIcon": false
-              },
-              "Tile": {
-                "Query": "EventLog=secRMM EventID=400 | measure count() by Computer",
-                "Legend": "Total Count"
-              },
-              "List": {
-                "Query": "EventLog=secRMM EventID=400 | measure count() by Computer",
-                "HideGraph": false,
-                "enableSparklines": false,
-                "operation": "Summary",
-                "ColumnsTitle": {
-                  "Name": "Computer",
-                  "Value": "Count"
-                },
-                "Color": "#0072c6",
-                "thresholds": {
-                  "isEnabled": false,
-                  "values": [
-                    {
-                      "name": "Normal",
-                      "threshold": "Default",
-                      "color": "#009e49",
-                      "isDefault": true
-                    },
-                    {
-                      "name": "Warning",
-                      "threshold": 60,
-                      "color": "#fcd116"
-                    },
-                    {
-                      "name": "Error",
-                      "threshold": 90,
-                      "color": "#ba141a"
-                    }
-                  ]
-                },
-                "NameDSVSeparator": "",
-                "NavigationQuery": "{selected item}"
-              }
-            }
-          },
-          {
-            "Id": "NumberTileListBuilderBlade",
-            "Type": "Blade",
-            "Version": 0,
-            "Configuration": {
-              "General": {
-                "title": "Removable Media Administration Events",
-                "newGroup": false,
-                "icon": "",
-                "useIcon": false
-              },
-              "Tile": {
-                "Query": "EventLog=secRMM EventID=700 OR EventID=701 | measure count() by Computer",
-                "Legend": "Total Count"
-              },
-              "List": {
-                "Query": "EventLog=secRMM EventID=700 OR EventID=701 | measure count() by Computer",
-                "HideGraph": false,
-                "enableSparklines": false,
-                "operation": "Summary",
-                "ColumnsTitle": {
-                  "Name": "Computer",
-                  "Value": "Count"
-                },
-                "Color": "#0072c6",
-                "thresholds": {
-                  "isEnabled": false,
-                  "values": [
-                    {
-                      "name": "Normal",
-                      "threshold": "Default",
-                      "color": "#009e49",
-                      "isDefault": true
-                    },
-                    {
-                      "name": "Warning",
-                      "threshold": 60,
-                      "color": "#fcd116"
-                    },
-                    {
-                      "name": "Error",
-                      "threshold": 90,
-                      "color": "#ba141a"
-                    }
-                  ]
-                },
-                "NameDSVSeparator": "",
-                "NavigationQuery": "{selected item}"
-              }
-            }
-          },
-          {
-            "Id": "SingleQueryDonutBuilderBladeV1",
-            "Type": "Blade",
-            "Version": 0,
-            "Configuration": {
-              "General": {
-                "title": "Removable Media Write Events",
-                "newGroup": false,
-                "icon": "",
-                "useIcon": false
-              },
-              "Header": {
-                "Title": "Total Count",
-                "Subtitle": "Files written to removable media devices"
-              },
-              "Donut": {
-                "Query": "EventLog=secRMM EventID=402 | measure count() by Type",
-                "CenterLegend": {
-                  "Text": "Total",
-                  "Operation": "Sum",
-                  "ArcsToSelect": [ ]
-                },
-                "Options": {
-                  "colors": [
-                    "#00188f",
-                    "#0072c6",
-                    "#00bcf2"
-                  ],
-                  "valueColorMapping": [ ]
-                }
-              },
-              "List": {
-                "Query": "EventLog=secRMM EventID=402 | measure Count() by Type",
-                "HideGraph": false,
-                "enableSparklines": false,
-                "operation": "Summary",
-                "ColumnsTitle": {
-                  "Name": "Computer",
-                  "Value": "Count"
-                },
-                "Color": "#0072c6",
-                "thresholds": {
-                  "isEnabled": false,
-                  "values": [
-                    {
-                      "name": "Normal",
-                      "threshold": "Default",
-                      "color": "#009e49",
-                      "isDefault": true
-                    },
-                    {
-                      "name": "Warning",
-                      "threshold": 60,
-                      "color": "#fcd116"
-                    },
-                    {
-                      "name": "Error",
-                      "threshold": 90,
-                      "color": "#ba141a"
-                    }
-                  ]
-                },
-                "NameDSVSeparator": "",
-                "NavigationQuery": "{selected item}"
-              }
-            }
-          }
-        ],
-        "OverviewTile": {
-          "Id": "SingleQueryDonutBuilderTileV1",
-          "Type": "OverviewTile",
-          "Version": 0,
-          "Configuration": {
-            "Donut": {
-              "Query": "EventLog=secRMM EventID=500 OR EventID=501 OR EventID=502 OR EventID=503 OR EventID=503 OR EventID=504 OR EventID=505 OR EventID=506 OR EventID=507 OR EventID=508 OR EventID=509  | measure count() by Type",
-              "CenterLegend": {
-                "Text": "Authorization Failures",
-                "Operation": "Sum",
-                "ArcsToSelect": [ ]
-              },
-              "Options": {
-                "colors": [
-                  "#ba141a",
-                  "#0072c6",
-                  "#00bcf2"
-                ],
-                "valueColorMapping": [
-                  {
-                    "value": "",
-                    "color": "#00188f"
-                  }
-                ]
-              }
-            },
-            "Advanced": {
-              "DataFlowVerification": {
-                "Enabled": false,
-                "Query": "*",
-                "Message": ""
-              }
-            },
-            "TimeInterval": {
-              "intervalDurationInHours": 168,
-              "intervalEndOffsetInHours": 0
-            }
-          }
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workspaceName": {
+            "type": "string"
+        },
+        "accountName": {
+            "type": "string"
+        },
+        "workspaceRegionId": {
+            "type": "string"
+        },
+        "regionId": {
+            "type": "string"
+        },
+        "pricingTier": {
+            "type": "string"
+        },
+        "solutionName": {
+            "type": "string",
+            "defaultValue": "secRMM OMS Solution"
         }
-      }
-    }
-  ],
-  "outputs": {
-  }
+    },
+    "variables": {
+        "SolutionVersion": "9.8.0.0",
+        "SolutionPublisher": "Squadra Technologies",
+        "LogAnalyticsApiVersion": "2015-11-01-preview",
+        "ViewAuthor": "support@squadratechnologies.com",
+        "ViewDescription": "This is the OMS Dashboard for the secRMM security solution.",
+        "ViewName": "secRMM"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('SolutionName'), '[' ,parameters('workspacename'), ']')]",
+            "location": "[parameters('workspaceRegionId')]",
+            "tags": {},
+            "type": "Microsoft.OperationsManagement/solutions",
+            "apiVersion": "[variables('LogAnalyticsApiVersion')]",
+            "dependsOn": [
+                "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspacename'), '/views/', variables('ViewName'))]"
+            ],
+            "properties": {
+                "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspacename'))]",
+                "referencedResources": [],
+                "containedResources": [
+                    "[resourceId('Microsoft.OperationalInsights/workspaces/views/', parameters('workspaceName'), variables('ViewName'))]"
+                ]
+            },
+            "plan": {
+                "name": "[concat(parameters('SolutionName'), '[' ,parameters('workspaceName'), ']')]",
+                "Version": "[variables('SolutionVersion')]",
+                "product": "ContosoSolution",
+                "publisher": "[variables('SolutionPublisher')]",
+                "promotionCode": ""
+            }
+        },
+        {
+            "apiVersion": "[variables('LogAnalyticsApiVersion')]",
+            "name": "[concat(parameters('workspaceName'), '/', variables('ViewName'))]",
+            "type": "Microsoft.OperationalInsights/workspaces/views",
+            "location": "[parameters('workspaceregionId')]",
+            "dependson": [],
+            "properties": {
+                "Id": "[variables('ViewName')]",
+                "Name": "[variables('ViewName')]",
+                "DisplayName": "[variables('ViewName')]",
+                "Description": "[variables('ViewDescription')]",
+                "Author": "[variables('ViewAuthor')]",
+                "Source": "Local",
+                "Dashboard": [
+                    {
+                        "Id": "SingleQueryDonutBuilderBladeV1",
+                        "Type": "Blade",
+                        "Version": 0,
+                        "Configuration": {
+                            "General": {
+                                "title": "Removable Media Authorization Failures",
+                                "newGroup": false,
+                                "useIcon": false
+                            },
+                            "Header": {
+                                "Title": "Total Count",
+                                "Subtitle": "Failed file write attempts to removable media"
+                            },
+                            "Donut": {
+                                "Query": "EventLog=secRMM EventID=500 OR EventID=501 OR EventID=502 OR EventID=503 OR EventID=503 OR EventID=504 OR EventID=505 OR EventID=506 OR EventID=507 OR EventID=508 OR EventID=509 | measure count() by Type",
+                                "CenterLegend": {
+                                    "Text": "Total",
+                                    "Operation": "Sum",
+                                    "ArcsToSelect": []
+                                },
+                                "Options": {
+                                    "colors": [
+                                        "#e81123",
+                                        "#ba141a",
+                                        "#ba141a"
+                                    ],
+                                    "valueColorMapping": []
+                                }
+                            },
+                            "List": {
+                                "Query": "EventLog=secRMM EventID=500 OR EventID=501 OR EventID=502 OR EventID=503 OR EventID=503 OR EventID=504 OR EventID=505 OR EventID=506 OR EventID=507 OR EventID=508 OR EventID=509 | measure Count() by Type",
+                                "HideGraph": false,
+                                "enableSparklines": false,
+                                "ColumnsTitle": {
+                                    "Name": "Computer",
+                                    "Value": "Count"
+                                },
+                                "Color": "#0072c6",
+                                "operation": "Summary",
+                                "thresholds": {
+                                    "isEnabled": false,
+                                    "values": [
+                                        {
+                                            "name": "Normal",
+                                            "threshold": "Default",
+                                            "color": "#009e49",
+                                            "isDefault": true
+                                        },
+                                        {
+                                            "name": "Warning",
+                                            "threshold": "60",
+                                            "color": "#fcd116",
+                                            "isDefault": false
+                                        },
+                                        {
+                                            "name": "Error",
+                                            "threshold": "90",
+                                            "color": "#ba141a",
+                                            "isDefault": false
+                                        }
+                                    ]
+                                },
+                                "NameDSVSeparator": "",
+                                "NavigationQuery": "{selected item}"
+                            }
+                        }
+                    },
+                    {
+                        "Id": "NumberTileListBuilderBlade",
+                        "Type": "Blade",
+                        "Version": 0,
+                        "Configuration": {
+                            "General": {
+                                "title": "Removable Media Online Events",
+                                "newGroup": false,
+                                "icon": "",
+                                "useIcon": false
+                            },
+                            "Tile": {
+                                "Query": "EventLog=secRMM EventID=400 | measure count() by Computer",
+                                "Legend": "Total Count"
+                            },
+                            "List": {
+                                "Query": "EventLog=secRMM EventID=400 | measure count() by Computer",
+                                "HideGraph": false,
+                                "enableSparklines": false,
+                                "operation": "Summary",
+                                "ColumnsTitle": {
+                                    "Name": "Computer",
+                                    "Value": "Count"
+                                },
+                                "Color": "#0072c6",
+                                "thresholds": {
+                                    "isEnabled": false,
+                                    "values": [
+                                        {
+                                            "name": "Normal",
+                                            "threshold": "Default",
+                                            "color": "#009e49",
+                                            "isDefault": true
+                                        },
+                                        {
+                                            "name": "Warning",
+                                            "threshold": 60,
+                                            "color": "#fcd116"
+                                        },
+                                        {
+                                            "name": "Error",
+                                            "threshold": 90,
+                                            "color": "#ba141a"
+                                        }
+                                    ]
+                                },
+                                "NameDSVSeparator": "",
+                                "NavigationQuery": "{selected item}"
+                            }
+                        }
+                    },
+                    {
+                        "Id": "NumberTileListBuilderBlade",
+                        "Type": "Blade",
+                        "Version": 0,
+                        "Configuration": {
+                            "General": {
+                                "title": "Removable Media Administration Events",
+                                "newGroup": false,
+                                "icon": "",
+                                "useIcon": false
+                            },
+                            "Tile": {
+                                "Query": "EventLog=secRMM EventID=700 OR EventID=701 | measure count() by Computer",
+                                "Legend": "Total Count"
+                            },
+                            "List": {
+                                "Query": "EventLog=secRMM EventID=700 OR EventID=701 | measure count() by Computer",
+                                "HideGraph": false,
+                                "enableSparklines": false,
+                                "operation": "Summary",
+                                "ColumnsTitle": {
+                                    "Name": "Computer",
+                                    "Value": "Count"
+                                },
+                                "Color": "#0072c6",
+                                "thresholds": {
+                                    "isEnabled": false,
+                                    "values": [
+                                        {
+                                            "name": "Normal",
+                                            "threshold": "Default",
+                                            "color": "#009e49",
+                                            "isDefault": true
+                                        },
+                                        {
+                                            "name": "Warning",
+                                            "threshold": 60,
+                                            "color": "#fcd116"
+                                        },
+                                        {
+                                            "name": "Error",
+                                            "threshold": 90,
+                                            "color": "#ba141a"
+                                        }
+                                    ]
+                                },
+                                "NameDSVSeparator": "",
+                                "NavigationQuery": "{selected item}"
+                            }
+                        }
+                    },
+                    {
+                        "Id": "SingleQueryDonutBuilderBladeV1",
+                        "Type": "Blade",
+                        "Version": 0,
+                        "Configuration": {
+                            "General": {
+                                "title": "Removable Media Write Events",
+                                "newGroup": false,
+                                "icon": "",
+                                "useIcon": false
+                            },
+                            "Header": {
+                                "Title": "Total Count",
+                                "Subtitle": "Files written to removable media devices"
+                            },
+                            "Donut": {
+                                "Query": "EventLog=secRMM EventID=402 | measure count() by Type",
+                                "CenterLegend": {
+                                    "Text": "Total",
+                                    "Operation": "Sum",
+                                    "ArcsToSelect": []
+                                },
+                                "Options": {
+                                    "colors": [
+                                        "#00188f",
+                                        "#0072c6",
+                                        "#00bcf2"
+                                    ],
+                                    "valueColorMapping": []
+                                }
+                            },
+                            "List": {
+                                "Query": "EventLog=secRMM EventID=402 | measure Count() by Type",
+                                "HideGraph": false,
+                                "enableSparklines": false,
+                                "operation": "Summary",
+                                "ColumnsTitle": {
+                                    "Name": "Computer",
+                                    "Value": "Count"
+                                },
+                                "Color": "#0072c6",
+                                "thresholds": {
+                                    "isEnabled": false,
+                                    "values": [
+                                        {
+                                            "name": "Normal",
+                                            "threshold": "Default",
+                                            "color": "#009e49",
+                                            "isDefault": true
+                                        },
+                                        {
+                                            "name": "Warning",
+                                            "threshold": 60,
+                                            "color": "#fcd116"
+                                        },
+                                        {
+                                            "name": "Error",
+                                            "threshold": 90,
+                                            "color": "#ba141a"
+                                        }
+                                    ]
+                                },
+                                "NameDSVSeparator": "",
+                                "NavigationQuery": "{selected item}"
+                            }
+                        }
+                    }
+                ],
+                "OverviewTile": {
+                    "Id": "SingleQueryDonutBuilderTileV1",
+                    "Type": "OverviewTile",
+                    "Version": 0,
+                    "Configuration": {
+                        "Donut": {
+                            "Query": "EventLog=secRMM EventID=500 OR EventID=501 OR EventID=502 OR EventID=503 OR EventID=503 OR EventID=504 OR EventID=505 OR EventID=506 OR EventID=507 OR EventID=508 OR EventID=509  | measure count() by Type",
+                            "CenterLegend": {
+                                "Text": "Authorization Failures",
+                                "Operation": "Sum",
+                                "ArcsToSelect": []
+                            },
+                            "Options": {
+                                "colors": [
+                                    "#ba141a",
+                                    "#0072c6",
+                                    "#00bcf2"
+                                ],
+                                "valueColorMapping": [
+                                    {
+                                        "value": "",
+                                        "color": "#00188f"
+                                    }
+                                ]
+                            }
+                        },
+                        "Advanced": {
+                            "DataFlowVerification": {
+                                "Enabled": false,
+                                "Query": "*",
+                                "Message": ""
+                            }
+                        },
+                        "TimeInterval": {
+                            "intervalDurationInHours": 168,
+                            "intervalEndOffsetInHours": 0
+                        }
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {}
 }
