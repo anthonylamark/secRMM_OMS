@@ -23,7 +23,7 @@
         }
     },
     "variables": {
-        "SolutionVersion": "9.8.1.0",
+        "SolutionVersion": "9.8.2.0",
         "SolutionPublisher": "Squadra Technologies",
         "LogAnalyticsApiVersion": "2015-11-01-preview",
         "ViewAuthor": "support@squadratechnologies.com",
